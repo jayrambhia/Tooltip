@@ -498,7 +498,7 @@ public class Tooltip extends ViewGroup {
         }
 
         /**
-         * Whether the tooltip should be dismissed or not if clicked outside
+         * Whether the tooltip should be dismissed or not if clicked outside. Default it true
          * @param cancelable boolean
          * @return Builder
          */
@@ -540,7 +540,7 @@ public class Tooltip extends ViewGroup {
         }
 
         /**
-         * Show Tip
+         * Show Tip. If null, it doesn't show the tip.
          * @param tip {@link Tip}
          * @return Builder
          */
@@ -552,6 +552,8 @@ public class Tooltip extends ViewGroup {
         /**
          * If you want the tooltip to dismiss automatically after a certain amount of time,
          * set it in milliseconds. Values <= 0 are considered invalid and auto dismiss is turned off.
+         *
+         * Default is 0.
          *
          * @param timeInMilli dismiss time
          * @return Builder
@@ -626,7 +628,7 @@ public class Tooltip extends ViewGroup {
      * Tip of the tooltip. Tip is drawn separately to accommodate custom views.
      * It has three properties. {@link #width}, {@link #height}, and {@link #color}.
      * <br/><br/>
-     * Tip is drawn as a triangle. Imagine an isosceles triangle. The length of the base
+     * Tip is drawn as an isosceles triangle. The length of the base
      * is defined by width and perpendicular length between top vertex and base is defined
      * by height.
      */
