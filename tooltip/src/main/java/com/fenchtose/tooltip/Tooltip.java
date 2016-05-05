@@ -457,7 +457,7 @@ public class Tooltip extends ViewGroup {
         /**
          * set tooltip's content view
          * @param view Content of the tooltip
-         * @return
+         * @return Builder
          */
         public Builder content(@NonNull View view) {
             this.contentView = view;
@@ -467,7 +467,7 @@ public class Tooltip extends ViewGroup {
         /**
          * set tooltip's anchor with position {@link #TOP}
          * @param view Anchor view
-         * @return
+         * @return Builder
          */
         public Builder anchor(@NonNull View view) {
             this.anchorView = view;
@@ -479,7 +479,7 @@ public class Tooltip extends ViewGroup {
          * @param view Anchor view
          * @param position position of tooltip relative to the anchor. {@link #TOP}, {@link #RIGHT},
          *                 {@link #BOTTOM}, {@link #LEFT}
-         * @return
+         * @return Builder
          */
         public Builder anchor(@NonNull View view, @Position int position) {
             this.anchorView = view;
@@ -490,7 +490,7 @@ public class Tooltip extends ViewGroup {
         /**
          * Add Tooltip in this view
          * @param viewGroup {@link ViewGroup} root view (parent view) for the tooltip
-         * @return
+         * @return Builder
          */
         public Builder into(@NonNull ViewGroup viewGroup) {
             this.rootView = viewGroup;
@@ -500,7 +500,7 @@ public class Tooltip extends ViewGroup {
         /**
          * Whether the tooltip should be dismissed or not if clicked outside
          * @param cancelable boolean
-         * @return
+         * @return Builder
          */
         public Builder cancelable(boolean cancelable) {
             this.cancelable = cancelable;
@@ -514,7 +514,7 @@ public class Tooltip extends ViewGroup {
          * bottom direction.
          *
          * @param autoAdjust boolean
-         * @return
+         * @return Builder
          */
         public Builder autoAdjust(boolean autoAdjust) {
             this.autoAdjust = autoAdjust;
@@ -532,7 +532,7 @@ public class Tooltip extends ViewGroup {
         /**
          * Attach dismiss listener
          * @param listener
-         * @return
+         * @return Builder
          */
         public Builder withListener(@NonNull Listener listener) {
             this.listener = listener;
@@ -542,7 +542,7 @@ public class Tooltip extends ViewGroup {
         /**
          * Show Tip
          * @param tip {@link Tip}
-         * @return
+         * @return Builder
          */
         public Builder withTip(@Nullable Tip tip) {
             this.tip = tip;
@@ -554,7 +554,7 @@ public class Tooltip extends ViewGroup {
          * set it in milliseconds. Values <= 0 are considered invalid and auto dismiss is turned off.
          *
          * @param timeInMilli dismiss time
-         * @return
+         * @return Builder
          */
         public Builder autoCancel(int timeInMilli) {
             this.autoCancelTime = timeInMilli;
@@ -564,7 +564,7 @@ public class Tooltip extends ViewGroup {
         /**
          * Show logs
          * @param debug boolean
-         * @return
+         * @return Builder
          */
         public Builder debug(boolean debug) {
             this.debug = debug;
