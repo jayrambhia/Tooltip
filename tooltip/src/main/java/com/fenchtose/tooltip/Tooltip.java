@@ -1,5 +1,6 @@
 package com.fenchtose.tooltip;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -18,6 +19,7 @@ import java.lang.annotation.RetentionPolicy;
 /**
  * Created by Jay Rambhia on 5/4/16.
  */
+@SuppressLint("ViewConstructor")
 public class Tooltip extends ViewGroup {
 
     private static final String TAG = "Tooltip";
@@ -60,10 +62,10 @@ public class Tooltip extends ViewGroup {
     private Tooltip(@NonNull Context context, @NonNull View content, @NonNull View anchorView,
                     @NonNull Listener builderListener) {
         super(context);
-        init(context, content, anchorView, builderListener);
+        init(content, anchorView, builderListener);
     }
 
-    private void init(@NonNull Context context, @NonNull View contentView, @NonNull View anchorView,
+    private void init(@NonNull View contentView, @NonNull View anchorView,
                       @NonNull Listener builderListener) {
 
         this.contentView = contentView;
@@ -276,7 +278,7 @@ public class Tooltip extends ViewGroup {
         }
     }
 
-    public void setPosition(int position) {
+    private void setPosition(int position) {
         this.position = position;
     }
 
@@ -298,11 +300,11 @@ public class Tooltip extends ViewGroup {
         }
     }
 
-    public void setAutoAdjust(boolean autoAdjust) {
+    private void setAutoAdjust(boolean autoAdjust) {
         this.autoAdjust = autoAdjust;
     }
 
-    public void setPadding(int padding) {
+    private void setPadding(int padding) {
         this.padding = padding;
     }
 
@@ -314,14 +316,14 @@ public class Tooltip extends ViewGroup {
         return showTip;
     }
 
-    public void setShowTip(boolean showTip) {
+    private void setShowTip(boolean showTip) {
         this.showTip = showTip;
         if (showTip && tip == null) {
             throw new NullPointerException("Tip is null");
         }
     }
 
-    public void setTip(@Nullable Tip tip) {
+    private void setTip(@Nullable Tip tip) {
         this.showTip = (tip != null);
         this.tip = tip;
         if (tip != null) {
@@ -349,33 +351,87 @@ public class Tooltip extends ViewGroup {
         this.debug = debug;
     }
 
+    /**
+     * Builder class for {@link Tooltip}. Builder has the responsibility of creating the Tooltip
+     * and adding/displaying it in the {@link #rootView}.
+     */
     public static class Builder {
 
         private Context context;
 
+        /**
+         * ViewGroup where Tooltip is added
+         */
         private ViewGroup rootView;
+
+        /**
+         * Content of the Tooltip
+         */
         private View contentView;
+
+        /**
+         * Anchor of the Tooltip. This is where the tooltip is anchored.
+         */
         private View anchorView;
 
+        /**
+         * Position of the Tooltip relative to the anchor. Default position is {@link #TOP}.
+         * Other positions are - {@link #BOTTOM}, {@link #RIGHT}, {@link #LEFT}
+         */
+        @Position
+        private int position = TOP;
+
+        /**
+         * Whether the tooltip should be dismissed or not if clicked outside
+         */
         private boolean cancelable = true;
+
+        /**
+         * Automatically adjust tooltip layout if it's going out of screen.
+         * Scenario: If tooltip is anchored with position {@link #TOP}, it will try to position itself
+         * within the bounds of the view in right and left direction. It will not try to adjust itself in top
+         * bottom direction.
+         */
         private boolean autoAdjust = true;
+
+        /**
+         * Tip of the tooltip.
+         */
         private Tip tip;
+
+        /**
+         * Margin from the anchor.
+         */
         private int padding = 0;
 
+        /**
+         * If you want the tooltip to dismiss automatically after a certain amount of time,
+         * set it in milliseconds. Values <= 0 are considered invalid and auto dismiss is turned off.
+         */
         private int autoCancelTime = NO_AUTO_CANCEL;
 
+        /**
+         * Tooltip instance
+         */
         private Tooltip tooltip;
 
         private Handler handler;
         private Runnable autoCancelRunnable;
+
+        /**
+         * Dismiss Listener for Builder
+         */
         private Listener myListener;
 
+        /**
+         * Dismiss Listener for User
+         */
         private Listener listener;
 
+        /**
+         * Show logs
+         */
         private boolean debug = false;
-
-        @Position
-        private int position = TOP;
 
         public Builder(@NonNull Context context) {
             this.context = context;
@@ -398,62 +454,128 @@ public class Tooltip extends ViewGroup {
             };
         }
 
+        /**
+         * set tooltip's content view
+         * @param view Content of the tooltip
+         * @return
+         */
         public Builder content(@NonNull View view) {
             this.contentView = view;
             return this;
         }
 
+        /**
+         * set tooltip's anchor with position {@link #TOP}
+         * @param view Anchor view
+         * @return
+         */
         public Builder anchor(@NonNull View view) {
             this.anchorView = view;
             return this;
         }
 
+        /**
+         * Set tooltip's anchor with tooltip's relative position
+         * @param view Anchor view
+         * @param position position of tooltip relative to the anchor. {@link #TOP}, {@link #RIGHT},
+         *                 {@link #BOTTOM}, {@link #LEFT}
+         * @return
+         */
         public Builder anchor(@NonNull View view, @Position int position) {
             this.anchorView = view;
             this.position = position;
             return this;
         }
 
+        /**
+         * Add Tooltip in this view
+         * @param viewGroup {@link ViewGroup} root view (parent view) for the tooltip
+         * @return
+         */
         public Builder into(@NonNull ViewGroup viewGroup) {
             this.rootView = viewGroup;
             return this;
         }
 
+        /**
+         * Whether the tooltip should be dismissed or not if clicked outside
+         * @param cancelable boolean
+         * @return
+         */
         public Builder cancelable(boolean cancelable) {
             this.cancelable = cancelable;
             return this;
         }
 
+        /**
+         * Automatically adjust tooltip layout if it's going out of screen.
+         * Scenario: If tooltip is anchored with position {@link #TOP}, it will try to position itself
+         * within the bounds of the view in right and left direction. It will not try to adjust itself in top
+         * bottom direction.
+         *
+         * @param autoAdjust boolean
+         * @return
+         */
         public Builder autoAdjust(boolean autoAdjust) {
             this.autoAdjust = autoAdjust;
             return this;
         }
 
+        /**
+         * Margin from the anchor.
+         */
         public Builder withPadding(int padding) {
             this.padding = padding;
             return this;
         }
 
+        /**
+         * Attach dismiss listener
+         * @param listener
+         * @return
+         */
         public Builder withListener(@NonNull Listener listener) {
             this.listener = listener;
             return this;
         }
 
+        /**
+         * Show Tip
+         * @param tip {@link Tip}
+         * @return
+         */
         public Builder withTip(@Nullable Tip tip) {
             this.tip = tip;
             return this;
         }
 
+        /**
+         * If you want the tooltip to dismiss automatically after a certain amount of time,
+         * set it in milliseconds. Values <= 0 are considered invalid and auto dismiss is turned off.
+         *
+         * @param timeInMilli dismiss time
+         * @return
+         */
         public Builder autoCancel(int timeInMilli) {
             this.autoCancelTime = timeInMilli;
             return this;
         }
 
+        /**
+         * Show logs
+         * @param debug boolean
+         * @return
+         */
         public Builder debug(boolean debug) {
             this.debug = debug;
             return this;
         }
 
+        /**
+         * Create a new instance of Tooltip. This method will throw {@link NullPointerException}
+         * if {@link #anchorView} or {@link #rootView} or {@link #contentView} is not assigned.
+         * @return {@link Tooltip}
+         */
         public Tooltip build() {
             if (anchorView == null) {
                 throw new NullPointerException("anchor view is null");
@@ -479,6 +601,15 @@ public class Tooltip extends ViewGroup {
             return tooltip;
         }
 
+        /**
+         * Creates a new instance of Tooltip by calling {@link #build()} and adds tooltip to {@link #rootView}.
+         * <br/><br/>
+         * Tooltip is added to the rootView with MATCH_PARENT for width and height constraints. {@link #contentView}
+         * is drawn based on its LayoutParams. If it does not contain any LayoutParams, new LayoutParams are generated
+         * with WRAP_CONTENT for width and height and added to the Tooltip view.
+         *
+         * @return Generated {@link Tooltip}
+         */
         public Tooltip show() {
             tooltip = build();
             rootView.addView(tooltip, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
@@ -491,10 +622,29 @@ public class Tooltip extends ViewGroup {
         }
     }
 
+    /**
+     * Tip of the tooltip. Tip is drawn separately to accommodate custom views.
+     * It has three properties. {@link #width}, {@link #height}, and {@link #color}.
+     * <br/><br/>
+     * Tip is drawn as a triangle. Imagine an isosceles triangle. The length of the base
+     * is defined by width and perpendicular length between top vertex and base is defined
+     * by height.
+     */
     public static class Tip {
 
+        /**
+         * length of the base of isosceles triangle
+         */
         private int width;
+
+        /**
+         * length of the perpendicular from top vertex to the base
+         */
         private int height;
+
+        /**
+         * color of the tip.
+         */
         private int color;
 
         public Tip(int width, int height, int color) {
