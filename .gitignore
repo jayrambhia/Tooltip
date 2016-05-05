@@ -9,3 +9,7 @@
 .gradle/*
 .idea/*
 .idea
+gradle
+gradle/
+gradlew
+gradlew.bat
