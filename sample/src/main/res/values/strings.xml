@@ -18,5 +18,6 @@
     <string name="left">This tooltip has LEFT position and no adjustments are required</string>
 
     <string name="custom_view">Hey, This is a custom view. Neat, right?</string>
+    <string name="menu_tooltip">This is a tooltip for menu item.</string>
 
 </resources>

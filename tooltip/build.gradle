@@ -2,7 +2,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
 
-version = "0.1.1"
+version = "0.1.2"
 group = "com.fenchtose"
 
 def siteUrl = "https://github.com/jayrambhia/Tooltip"
@@ -13,9 +13,9 @@ android {
     buildToolsVersion "23.0.3"
 
     defaultConfig {
-        minSdkVersion 16
+        minSdkVersion 1
         targetSdkVersion 23
-        versionCode 1
+        versionCode 12
         versionName version
     }
     buildTypes {

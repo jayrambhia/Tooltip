@@ -17,8 +17,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * Created by Jay Rambhia on 5/4/16.
+ * Dynamically add tooltips in any ViewGroups.
+ * Use {@link Builder} to generate and inject Tooltip in your layout.
+ * Use {@link #dismiss()} method to manually dismiss the tooltip.
  */
+@SuppressWarnings("unused")
 @SuppressLint("ViewConstructor")
 public class Tooltip extends ViewGroup {
 
@@ -270,7 +273,7 @@ public class Tooltip extends ViewGroup {
     protected void dispatchDraw(Canvas canvas) {
         super.dispatchDraw(canvas);
         if (debug) {
-            Log.i(TAG, "cavas w: " + canvas.getWidth() + ", h: " + canvas.getHeight());
+            Log.i(TAG, "canvas w: " + canvas.getWidth() + ", h: " + canvas.getHeight());
         }
 
         if (showTip) {
@@ -400,7 +403,7 @@ public class Tooltip extends ViewGroup {
         private Tip tip;
 
         /**
-         * Margin from the anchor.
+         * Margin from the anchor and screen boundaries
          */
         private int padding = 0;
 
@@ -522,7 +525,7 @@ public class Tooltip extends ViewGroup {
         }
 
         /**
-         * Margin from the anchor.
+         * Margin from the anchor and screen boundaries
          */
         public Builder withPadding(int padding) {
             this.padding = padding;
@@ -531,7 +534,7 @@ public class Tooltip extends ViewGroup {
 
         /**
          * Attach dismiss listener
-         * @param listener
+         * @param listener dismiss listener
          * @return Builder
          */
         public Builder withListener(@NonNull Listener listener) {
@@ -668,6 +671,9 @@ public class Tooltip extends ViewGroup {
         }
     }
 
+    /**
+     * Tooltip dismiss listener. {@link #onDismissed()} is called when tooltip is dismissed.
+     */
     public interface Listener {
         void onDismissed();
     }

@@ -41,7 +41,7 @@ That's it. It's that simple. You can customize the size and color of the tip to 
 ### Dependency
 
     dependencies {
-        compile 'com.fenchtose.tooltip:0.1.1'
+        compile 'com.fenchtose.tooltip:0.1.2'
     }
 
 ### Useful Methods:
@@ -53,7 +53,7 @@ That's it. It's that simple. You can customize the size and color of the tip to 
  - `into(ViewGroup viewGroup)` - set ViewGroup into which the tip is to be shown
  - `autoAdjust(boolean adjust)` - if you want the tooltip to adjust itself if going out of bound
  - `cancelable(boolean cancelable)` - if you want the tooltip to dismiss automatically if clicked outside. Default is true
- - `withPadding(int padding)` - distance from the anchor
+ - `withPadding(int padding)` - distance from the anchor and screen boundaries
  - `autoCancel(int timeInMS)` - if tooltip should be dismissed automatically after given time. If value is <= 0, auto cancel is off
  - `withListener(@NonNull Listener listener)` - Attach dismiss listener.
  - `debug(boolean debug)` - Enable debugging mode. Default is false.

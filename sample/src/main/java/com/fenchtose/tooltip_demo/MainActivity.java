@@ -1,10 +1,13 @@
 package com.fenchtose.tooltip_demo;
 
+import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -20,6 +23,9 @@ public class MainActivity extends AppCompatActivity {
     private int tooltipSize;
     private int tooltipPadding;
 
+    private int tipSizeSmall;
+    private int tipSizeRegular;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,9 +33,14 @@ public class MainActivity extends AppCompatActivity {
 
         root = (ViewGroup) findViewById(R.id.root);
 
-        tooltipSize = getResources().getDimensionPixelOffset(R.dimen.tooltip_width);
+        Resources res = getResources();
+
+        tooltipSize = res.getDimensionPixelOffset(R.dimen.tooltip_width);
         tooltipColor = ContextCompat.getColor(this, R.color.colorPrimary);
-        tooltipPadding = getResources().getDimensionPixelOffset(R.dimen.tooltip_padding);
+        tooltipPadding = res.getDimensionPixelOffset(R.dimen.tooltip_padding);
+
+        tipSizeSmall = res.getDimensionPixelSize(R.dimen.tip_dimen_small);
+        tipSizeRegular = res.getDimensionPixelSize(R.dimen.tip_dimen_regular);
 
         final View bottomButton = findViewById(R.id.button_bottom);
         if (bottomButton != null) {
@@ -142,6 +153,18 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        showMenuTooltip(findViewById(R.id.demo_action));
+        return true;
+    }
+
     private void showTooltip(@NonNull View anchor, @StringRes int resId,
                              @Tooltip.Position int position, boolean autoAdjust,
                              int width, int height) {
@@ -158,7 +181,7 @@ public class MainActivity extends AppCompatActivity {
                 .anchor(anchor, position)
                 .autoAdjust(autoAdjust)
                 .content(content)
-                .withTip(new Tooltip.Tip(60, 60, tipColor))
+                .withTip(new Tooltip.Tip(tipSizeRegular, tipSizeRegular, tipColor))
                 .into(root)
                 .debug(true)
                 .show();
@@ -172,7 +195,22 @@ public class MainActivity extends AppCompatActivity {
                 .autoAdjust(true)
                 .withPadding(tooltipPadding)
                 .content(content)
-                .withTip(new Tooltip.Tip(60, 60, tooltipColor))
+                .withTip(new Tooltip.Tip(tipSizeRegular, tipSizeRegular, tooltipColor))
+                .into(root)
+                .debug(true)
+                .show();
+    }
+
+    private void showMenuTooltip(@NonNull View anchor) {
+        TextView textView = (TextView) getLayoutInflater().inflate(R.layout.tooltip_textview, null);
+        textView.setText(R.string.menu_tooltip);
+
+        new Tooltip.Builder(this)
+                .anchor(anchor, Tooltip.BOTTOM)
+                .autoAdjust(true)
+                .content(textView)
+                .withPadding(getResources().getDimensionPixelOffset(R.dimen.menu_tooltip_padding))
+                .withTip(new Tooltip.Tip(tipSizeSmall, tipSizeSmall, tooltipColor))
                 .into(root)
                 .debug(true)
                 .show();
