@@ -1,23 +1,23 @@
 <resources>
     <string name="app_name">Tooltip</string>
 
-    <string name="bottom_auto_adjust">This tooltip has BOTTOM position and it will adjust its sides so as to stay in the bounds</string>
-    <string name="bottom_no_auto_adjust">This tooltip has BOTTOM position. It will not auto adjust to bounds</string>
-    <string name="bottom">This tooltip has BOTTOM position and no adjustments are required</string>
+    <string name="bottom_auto_adjust">This tooltip has BOTTOM position and it will adjust its sides so as to stay in the bounds. SCALE Animation</string>
+    <string name="bottom_no_auto_adjust">This tooltip has BOTTOM position. It will not auto adjust to bounds. SCALE Animation</string>
+    <string name="bottom">This tooltip has BOTTOM position and no adjustments are required. SCALE Animation</string>
 
-    <string name="top_auto_adjust">This tooltip has TOP position and it will adjust its sides so as to stay in the bounds</string>
-    <string name="top_no_auto_adjust">This tooltip has TOP position. It will not auto adjust to bounds</string>
-    <string name="top">This tooltip has TOP position and no adjustments are required</string>
+    <string name="top_auto_adjust">This tooltip has TOP position and it will adjust its sides so as to stay in the bounds. NO animation</string>
+    <string name="top_no_auto_adjust">This tooltip has TOP position. It will not auto adjust to bounds. NO animation</string>
+    <string name="top">This tooltip has TOP position and no adjustments are required. NO animation</string>
 
-    <string name="right_auto_adjust">This\ntooltip has\nRIGHT\nposition \nand\nit will adjust \nits sides\nso as to stay in\nthe bounds</string>
-    <string name="right_no_auto_adjust">This\ntooltip has\nRIGHT\nposition.\n\nIt will not auto\n\nadjust\nto bounds</string>
-    <string name="right">This tooltip has RIGHT position and no adjustments are required</string>
+    <string name="right_auto_adjust">This\ntooltip has\nRIGHT\nposition \nand\nit will adjust \nits sides\nso as to stay in\nthe bounds\nREVEAL Animation</string>
+    <string name="right_no_auto_adjust">This\ntooltip has\nRIGHT\nposition.\n\nIt will not auto\n\nadjust\nto bounds\nREVEAL Animation</string>
+    <string name="right">This tooltip has RIGHT position and no adjustments are required\nREVEAL Animation</string>
 
-    <string name="left_auto_adjust">This\ntooltip has\nLEFT\nposition \nand\nit will adjust \nits sides\nso as to stay in\nthe bounds</string>
-    <string name="left_no_auto_adjust">This\ntooltip has\nLEFT\nposition.\n\nIt will not auto\n\nadjust\nto bounds</string>
-    <string name="left">This tooltip has LEFT position and no adjustments are required</string>
+    <string name="left_auto_adjust">This tooltip has\nLEFT position \nand\nit will adjust \nits sides\nso as to stay in\nthe bounds\nSCALE_AND_FADE</string>
+    <string name="left_no_auto_adjust">This\ntooltip has\nLEFT\nposition.\n\nIt will not auto\n\nadjust\nto bounds\nSCALE_AND_FADE</string>
+    <string name="left">This tooltip has LEFT position and no adjustments are required\nSCALE_AND_FADE</string>
 
-    <string name="custom_view">Hey, This is a custom view. Neat, right?</string>
-    <string name="menu_tooltip">This is a tooltip for menu item.</string>
+    <string name="custom_view">Hey, This is a custom view.\nThis has SCALE_AND_FADE animation\nCheck out corner of the tip.\n\nClick android to dismiss</string>
+    <string name="menu_tooltip">This is a tooltip for menu item.\nThis has REVEAL animation.\nThis will animate only for\nlollipop and above\nThis will go away in 2000 ms</string>
 
 </resources>

@@ -5,7 +5,7 @@ not require any custom layout. It works out of the box with all the layouts.
 
 Here's a short gif showing how it works.
 
-![Demo](https://raw.githubusercontent.com/jayrambhia/Tooltip/master/art/demo.gif)
+![Demo](https://raw.githubusercontent.com/jayrambhia/Tooltip/master/art/demo1.gif)
 
 ## Tooltip.Builder
 
@@ -49,7 +49,8 @@ That's it. It's that simple. You can customize the size and color of the tip to 
  - `anchor(View view)` - set anchor view with position as `Tooltip.TOP`
  - `anchor(View view, @Position int position)` - set anchor view with position
  - `content(View view)` - set content view of the tooltip
- - `withTip(@Nullable Tip tip)` - set `Tip` of the tooltip. If null, it doesn't show the tip 
+ - `animate(@NonNull TooltipAnimation animation)` - set Animation for Show and Dismiss
+ - `withTip(@NonNull Tip tip)` - set `Tip` of the tooltip.
  - `into(ViewGroup viewGroup)` - set ViewGroup into which the tip is to be shown
  - `autoAdjust(boolean adjust)` - if you want the tooltip to adjust itself if going out of bound
  - `cancelable(boolean cancelable)` - if you want the tooltip to dismiss automatically if clicked outside. Default is true
@@ -65,11 +66,28 @@ Tip is drawn as an isosceles triangle. The length of the base is defined by widt
  - `width` - length of the base of isosceles triangle
  - `height` - length of the perpendicular from top vertex to the base
  - `color` - Color of the tip
+ - `tipRadius` - Corner radius of the tip
+
+### TooltipAnimation
+
+TooltipAnimation just holds type of the animation to be performed and duration of the animation
+ 
+ - `type` - Type of animation - `FADE`, `SCALE`, `REVEAL`, `SCALE_AND_FADE`
+ - `duration` - Animation duration in milliseconds
+ 
+ Animations are a bit tricky in this library. `FADE` and `REVEAL` are applied on the container of the tooltip
+ with appropriate parameters. So if the container has some background color, it looks really weird. The same
+ method can't be applied for `SCALE` because it doesn't draw the tooltip properly. So in `SCALE`, the animation
+ is applied on Tooltip's content view (and if tip is present, it will be there as it is not part of the content view).
+ To avoid this eye sore, you may use `SCALE_AND_FADE`, it does `SCALE` and `FADE` so the poor effect is not visible.
+ 
+ `REVEAL` uses Circular Reveal and hence is supported for API 21 and above.
  
 ### Future Work
  
  - Customizable tips
- - Animation in show and dismiss
+ - Shadow
+ - Improve and add more animations
 
 ## Licenses and Release History
 

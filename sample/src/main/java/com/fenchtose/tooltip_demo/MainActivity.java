@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.fenchtose.tooltip.Tooltip;
+import com.fenchtose.tooltip.TooltipAnimation;
 
 @SuppressWarnings("ConstantConditions")
 public class MainActivity extends AppCompatActivity {
@@ -55,7 +56,9 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.bottom_auto_adjust).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showTooltip(v, R.string.bottom_auto_adjust, Tooltip.BOTTOM, true, tooltipSize,
+                showTooltip(v, R.string.bottom_auto_adjust, Tooltip.BOTTOM, true,
+                        TooltipAnimation.SCALE,
+                        tooltipSize,
                         ViewGroup.LayoutParams.WRAP_CONTENT);
             }
         });
@@ -63,7 +66,9 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.bottom_no_auto_adjust).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showTooltip(v, R.string.bottom_no_auto_adjust, Tooltip.BOTTOM, false, tooltipSize,
+                showTooltip(v, R.string.bottom_no_auto_adjust, Tooltip.BOTTOM, false,
+                        TooltipAnimation.SCALE,
+                        tooltipSize,
                         ViewGroup.LayoutParams.WRAP_CONTENT);
             }
         });
@@ -71,7 +76,9 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.bottom).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showTooltip(v, R.string.bottom, Tooltip.BOTTOM, false, tooltipSize,
+                showTooltip(v, R.string.bottom, Tooltip.BOTTOM, false,
+                        TooltipAnimation.SCALE,
+                        tooltipSize,
                         ViewGroup.LayoutParams.WRAP_CONTENT);
             }
         });
@@ -79,7 +86,8 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.top_auto_adjust).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showTooltip(v, R.string.top_auto_adjust, Tooltip.TOP, true, tooltipSize,
+                showTooltip(v, R.string.top_auto_adjust, Tooltip.TOP, true,
+                        TooltipAnimation.NONE, tooltipSize,
                         ViewGroup.LayoutParams.WRAP_CONTENT);
             }
         });
@@ -87,7 +95,8 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.top_no_auto_adjust).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showTooltip(v, R.string.top_no_auto_adjust, Tooltip.TOP, false, tooltipSize,
+                showTooltip(v, R.string.top_no_auto_adjust, Tooltip.TOP, false,
+                        TooltipAnimation.NONE, tooltipSize,
                         ViewGroup.LayoutParams.WRAP_CONTENT);
             }
         });
@@ -95,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.top).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showTooltip(v, R.string.top, Tooltip.TOP, false, tooltipSize,
+                showTooltip(v, R.string.top, Tooltip.TOP, false,TooltipAnimation.NONE, tooltipSize,
                         ViewGroup.LayoutParams.WRAP_CONTENT);
             }
         });
@@ -104,6 +113,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 showTooltip(v, R.string.right_auto_adjust, Tooltip.RIGHT, true,
+                        TooltipAnimation.REVEAL,
                         ViewGroup.LayoutParams.WRAP_CONTENT,
                         tooltipSize);
             }
@@ -113,6 +123,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 showTooltip(v, R.string.right_no_auto_adjust, Tooltip.RIGHT, false,
+                        TooltipAnimation.REVEAL,
                         ViewGroup.LayoutParams.WRAP_CONTENT,
                         tooltipSize);
             }
@@ -122,6 +133,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 showTooltip(v, R.string.right, Tooltip.RIGHT, false,
+                        TooltipAnimation.REVEAL,
                         tooltipSize, ViewGroup.LayoutParams.WRAP_CONTENT);
             }
         });
@@ -130,6 +142,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 showTooltip(v, R.string.left_auto_adjust, Tooltip.LEFT, true,
+                        TooltipAnimation.SCALE_AND_FADE,
                         ViewGroup.LayoutParams.WRAP_CONTENT,
                         tooltipSize);
             }
@@ -139,6 +152,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 showTooltip(v, R.string.left_no_auto_adjust, Tooltip.LEFT, false,
+                        TooltipAnimation.SCALE_AND_FADE,
                         ViewGroup.LayoutParams.WRAP_CONTENT,
                         tooltipSize);
             }
@@ -148,6 +162,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 showTooltip(v, R.string.left, Tooltip.LEFT, false,
+                        TooltipAnimation.SCALE_AND_FADE,
                         tooltipSize, ViewGroup.LayoutParams.WRAP_CONTENT);
             }
         });
@@ -167,18 +182,22 @@ public class MainActivity extends AppCompatActivity {
 
     private void showTooltip(@NonNull View anchor, @StringRes int resId,
                              @Tooltip.Position int position, boolean autoAdjust,
+                             @TooltipAnimation.Type int type,
                              int width, int height) {
         TextView textView = (TextView) getLayoutInflater().inflate(R.layout.tooltip_textview, null);
         textView.setText(resId);
         textView.setLayoutParams(new ViewGroup.LayoutParams(width, height));
-        showTooltip(anchor, textView, position, autoAdjust, tooltipColor);
+        showTooltip(anchor, textView, position, autoAdjust, type, tooltipColor);
     }
 
     private void showTooltip(@NonNull View anchor, @NonNull View content,
                              @Tooltip.Position int position, boolean autoAdjust,
+                             @TooltipAnimation.Type int type,
                              int tipColor) {
+
         new Tooltip.Builder(this)
                 .anchor(anchor, position)
+                .animate(new TooltipAnimation(type, 500))
                 .autoAdjust(autoAdjust)
                 .content(content)
                 .withTip(new Tooltip.Tip(tipSizeRegular, tipSizeRegular, tipColor))
@@ -190,15 +209,24 @@ public class MainActivity extends AppCompatActivity {
     private void showCustomTooltip(@NonNull View anchor) {
         View content = getLayoutInflater().inflate(R.layout.item_tooltip_view_1, null);
 
-        new Tooltip.Builder(this)
+        final Tooltip customTooltip = new Tooltip.Builder(this)
                 .anchor(anchor, Tooltip.BOTTOM)
+                .animate(new TooltipAnimation(TooltipAnimation.SCALE_AND_FADE, 400))
                 .autoAdjust(true)
                 .withPadding(tooltipPadding)
                 .content(content)
-                .withTip(new Tooltip.Tip(tipSizeRegular, tipSizeRegular, tooltipColor))
+                .cancelable(false)
+                .withTip(new Tooltip.Tip(tipSizeRegular, tipSizeRegular, tooltipColor, 8))
                 .into(root)
                 .debug(true)
                 .show();
+
+        content.findViewById(R.id.dismiss_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                customTooltip.dismiss(true);
+            }
+        });
     }
 
     private void showMenuTooltip(@NonNull View anchor) {
@@ -207,7 +235,9 @@ public class MainActivity extends AppCompatActivity {
 
         new Tooltip.Builder(this)
                 .anchor(anchor, Tooltip.BOTTOM)
+                .animate(new TooltipAnimation(TooltipAnimation.REVEAL, 400))
                 .autoAdjust(true)
+                .autoCancel(2000)
                 .content(textView)
                 .withPadding(getResources().getDimensionPixelOffset(R.dimen.menu_tooltip_padding))
                 .withTip(new Tooltip.Tip(tipSizeSmall, tipSizeSmall, tooltipColor))
