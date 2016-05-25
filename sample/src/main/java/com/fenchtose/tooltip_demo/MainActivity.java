@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.fenchtose.tooltip.Tooltip;
+import com.fenchtose.tooltip.TooltipAnimation;
 
 @SuppressWarnings("ConstantConditions")
 public class MainActivity extends AppCompatActivity {
@@ -179,6 +180,7 @@ public class MainActivity extends AppCompatActivity {
                              int tipColor) {
         new Tooltip.Builder(this)
                 .anchor(anchor, position)
+                .animate(new TooltipAnimation(TooltipAnimation.SCALE, 500))
                 .autoAdjust(autoAdjust)
                 .content(content)
                 .withTip(new Tooltip.Tip(tipSizeRegular, tipSizeRegular, tipColor))
@@ -192,6 +194,7 @@ public class MainActivity extends AppCompatActivity {
 
         new Tooltip.Builder(this)
                 .anchor(anchor, Tooltip.BOTTOM)
+                .animate(new TooltipAnimation(TooltipAnimation.SCALE_AND_FADE, 400))
                 .autoAdjust(true)
                 .withPadding(tooltipPadding)
                 .content(content)
@@ -207,6 +210,7 @@ public class MainActivity extends AppCompatActivity {
 
         new Tooltip.Builder(this)
                 .anchor(anchor, Tooltip.BOTTOM)
+                .animate(new TooltipAnimation(TooltipAnimation.REVEAL, 400))
                 .autoAdjust(true)
                 .content(textView)
                 .withPadding(getResources().getDimensionPixelOffset(R.dimen.menu_tooltip_padding))
