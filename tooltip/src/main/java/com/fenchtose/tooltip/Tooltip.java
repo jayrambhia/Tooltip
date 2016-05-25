@@ -5,7 +5,6 @@ import android.animation.AnimatorSet;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.CornerPathEffect;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Point;
@@ -75,6 +74,7 @@ public class Tooltip extends ViewGroup {
 
     // To avoid multiple click dismiss error (in animation)
     private boolean isDismissed = false;
+    private boolean isDismissAnimationInProgress = false;
 
     private Tooltip(@NonNull Context context, @NonNull View content, @NonNull View anchorView,
                     @NonNull Listener builderListener) {
@@ -540,6 +540,10 @@ public class Tooltip extends ViewGroup {
 
     private void animateOut(@NonNull TooltipAnimation animation) {
 
+        if (isDismissAnimationInProgress) {
+            return;
+        }
+
         Point point = getAnchorPoint();
         int[] size = getTooltipSize();
 
@@ -556,6 +560,8 @@ public class Tooltip extends ViewGroup {
         }
 
         animator.start();
+        isDismissAnimationInProgress = true;
+
         animator.addListener(new Animator.AnimatorListener() {
             @Override
             public void onAnimationStart(Animator animation) {
@@ -794,7 +800,7 @@ public class Tooltip extends ViewGroup {
          * @param tip {@link Tip}
          * @return Builder
          */
-        public Builder withTip(@Nullable Tip tip) {
+        public Builder withTip(@NonNull Tip tip) {
             this.tip = tip;
             return this;
         }

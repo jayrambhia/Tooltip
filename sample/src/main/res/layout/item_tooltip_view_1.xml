@@ -17,6 +17,7 @@
         android:text="@string/custom_view"/>
 
     <ImageView
+        android:id="@+id/dismiss_button"
         android:layout_margin="8dp"
         android:layout_width="48dp"
         android:layout_height="48dp"
