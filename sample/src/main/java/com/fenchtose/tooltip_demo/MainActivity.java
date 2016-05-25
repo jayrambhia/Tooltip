@@ -198,7 +198,7 @@ public class MainActivity extends AppCompatActivity {
                 .autoAdjust(true)
                 .withPadding(tooltipPadding)
                 .content(content)
-                .withTip(new Tooltip.Tip(tipSizeRegular, tipSizeRegular, tooltipColor))
+                .withTip(new Tooltip.Tip(tipSizeRegular, tipSizeRegular, tooltipColor, 8))
                 .into(root)
                 .debug(true)
                 .show();

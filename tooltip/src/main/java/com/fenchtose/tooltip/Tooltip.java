@@ -5,6 +5,7 @@ import android.animation.AnimatorSet;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.CornerPathEffect;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Point;
@@ -72,6 +73,9 @@ public class Tooltip extends ViewGroup {
     private TooltipAnimation animation;
     private boolean animate;
 
+    // To avoid multiple click dismiss error (in animation)
+    private boolean isDismissed = false;
+
     private Tooltip(@NonNull Context context, @NonNull View content, @NonNull View anchorView,
                     @NonNull Listener builderListener) {
         super(context);
@@ -87,7 +91,7 @@ public class Tooltip extends ViewGroup {
 
         tipPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         tipPaint.setColor(0xffffffff);
-        tipPaint.setStyle(Paint.Style.FILL);
+        tipPaint.setStyle(Paint.Style.FILL_AND_STROKE);
 
         tipPath = new Path();
 
@@ -279,6 +283,7 @@ public class Tooltip extends ViewGroup {
                     + " bottom: " + (top + child.getMeasuredHeight()));
         }
 
+        // Tip was not drawn. We need to set anchor point for animation
         if (px == -1 || py == -1) {
             switch (position) {
                 case TOP:
@@ -300,9 +305,13 @@ public class Tooltip extends ViewGroup {
             }
         }
 
+        // Set anchor point
         anchorPoint.set(px, py);
+
+        // Get Tooltip content size
         tooltipSize[0] = child.getMeasuredWidth();
         tooltipSize[1] = child.getMeasuredHeight();
+
         child.layout(left, top, left + child.getMeasuredWidth(), top + child.getMeasuredHeight());
     }
 
@@ -377,7 +386,14 @@ public class Tooltip extends ViewGroup {
         this.showTip = (tip != null);
         this.tip = tip;
         if (tip != null) {
+
             tipPaint.setColor(tip.getColor());
+
+            if (tip.getTipRadius() > 0) {
+                tipPaint.setStrokeJoin(Paint.Join.ROUND);
+                tipPaint.setStrokeCap(Paint.Cap.ROUND);
+                tipPaint.setStrokeWidth(tip.getTipRadius());
+            }
         }
 
         if (debug) {
@@ -385,7 +401,19 @@ public class Tooltip extends ViewGroup {
         }
     }
 
+    /**
+     * Dismiss and remove Tooltip from the view.
+     * No animation is performed.
+     */
     public void dismiss() {
+
+        // Dismissing or already dismissed
+        if (isDismissed) {
+            return;
+        }
+
+        isDismissed = true;
+
         this.removeView(contentView);
         ViewGroup parent = (ViewGroup) getParent();
         parent.removeView(this);
@@ -397,8 +425,18 @@ public class Tooltip extends ViewGroup {
         }
     }
 
+    /**
+     * Dismiss and remove Tooltip from the view.
+     * @param animate Animation is performed if true
+     */
     public void dismiss(boolean animate) {
-        if (!animate) {
+
+        // Dismissing or already dismissed
+        if (isDismissed) {
+            return;
+        }
+
+        if (!animate || animation == null) {
             dismiss();
             return;
         }
@@ -434,6 +472,7 @@ public class Tooltip extends ViewGroup {
         if (animator != null) {
             animator.start();
         }
+
     }
 
     @Nullable
@@ -495,7 +534,7 @@ public class Tooltip extends ViewGroup {
 
             default:
                 return null;
-            
+
         }
     }
 
@@ -774,6 +813,12 @@ public class Tooltip extends ViewGroup {
             return this;
         }
 
+        /**
+         * Set show and dismiss animation for the tooltip
+         *
+         * @param animation {@link TooltipAnimation} to be performed while showing and dismissing
+         * @return Builder
+         */
         public Builder animate(@NonNull TooltipAnimation animation) {
             this.animation = animation;
             this.animate = true;
@@ -881,10 +926,21 @@ public class Tooltip extends ViewGroup {
          */
         private int color;
 
-        public Tip(int width, int height, int color) {
+        /**
+         * Corner radius of the tip in px
+         */
+        private int tipRadius;
+        private static final int DEFAULT_TIP_RADIUS = 0;
+
+        public Tip(int width, int height, int color, int tipRadius) {
             this.width = width;
             this.height = height;
             this.color = color;
+            this.tipRadius = tipRadius;
+        }
+
+        public Tip(int width, int height, int color) {
+            this(width, height, color, DEFAULT_TIP_RADIUS);
         }
 
         public int getWidth() {
@@ -897,6 +953,10 @@ public class Tooltip extends ViewGroup {
 
         public int getColor() {
             return color;
+        }
+
+        public int getTipRadius() {
+            return tipRadius;
         }
     }
 
