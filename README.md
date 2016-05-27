@@ -58,6 +58,7 @@ That's it. It's that simple. You can customize the size and color of the tip to 
  - `autoCancel(int timeInMS)` - if tooltip should be dismissed automatically after given time. If value is <= 0, auto cancel is off
  - `withListener(@NonNull Listener listener)` - Attach dismiss listener.
  - `debug(boolean debug)` - Enable debugging mode. Default is false.
+ - `checkForPreDraw(boolean check)` - Check if the anchor is drawn or not and then only draw the tooltip
 
 ### Tip
 
@@ -82,6 +83,14 @@ TooltipAnimation just holds type of the animation to be performed and duration o
  To avoid this eye sore, you may use `SCALE_AND_FADE`, it does `SCALE` and `FADE` so the poor effect is not visible.
  
  `REVEAL` uses Circular Reveal and hence is supported for API 21 and above.
+ 
+
+### CoordinatorLayout and Anchored Views
+
+ When a view(eg. FAB) is anchored to another view in the CoordinatorLayout and you try to draw a tooltip 
+ as that view as anchor, it doesn't work properly. I'm assuming that CoordinatorLayout first draws fab and them moves? I don't know.
+ Anyway, an `onPreDrawListener` listener has been added and once the event is received, tooltip is laid out.
+ By default, this method is not performed. To perform this method, use `checkForPreDraw(true)` while creating the builder.
  
 ### Future Work
  

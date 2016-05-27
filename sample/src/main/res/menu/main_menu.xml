@@ -7,4 +7,8 @@
         app:showAsAction="always"
         android:title="Add"/>
 
+    <item
+        android:id="@+id/second_action"
+        android:title="FAB Tooltip"/>
+
 </menu>

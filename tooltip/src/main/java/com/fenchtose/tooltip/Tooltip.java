@@ -70,11 +70,25 @@ public class Tooltip extends ViewGroup {
     public @interface Position {}
 
     private TooltipAnimation animation;
-    private boolean animate;
+    private boolean animate = false;
+    private boolean hasAnimatedIn = false;
 
     // To avoid multiple click dismiss error (in animation)
     private boolean isDismissed = false;
     private boolean isDismissAnimationInProgress = false;
+
+    // Coordinator anchored view BS
+    /**
+     * If we have made a call to {@link #doLayout(boolean, int, int, int, int)} or not
+     */
+    private boolean hasDrawn = false;
+
+    /**
+     * If the anchor is anchored to some view in CoordinatorLayout, we get incorrect data
+     * about its position in the window. So we need to wait for a preDraw event and then
+     * draw tooltip and layout its contents.
+     */
+    private boolean checkForPreDraw = false;
 
     private Tooltip(@NonNull Context context, @NonNull View content, @NonNull View anchorView,
                     @NonNull Listener builderListener) {
@@ -119,10 +133,33 @@ public class Tooltip extends ViewGroup {
     }
 
     @Override
-    protected void onLayout(boolean changed, int l, int t, int r, int b) {
+    protected void onLayout(final boolean changed, final int l, final int t, final int r, final int b) {
         if (debug) {
             Log.i(TAG, "l: " + l + ", t: " + t + ", r: " + r + ", b: " + b);
         }
+
+        if (checkForPreDraw && !hasDrawn) {
+            anchorView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+                @Override
+                public boolean onPreDraw() {
+                    anchorView.getViewTreeObserver().removeOnPreDrawListener(this);
+                    anchorView.getLocationInWindow(anchorLocation);
+                    Log.i(TAG, "onPreDraw: " + anchorLocation[0] + ", " + anchorLocation[1]);
+                    hasDrawn = true;
+                    doLayout(changed, l, t, r, b);
+                    return true;
+                }
+            });
+
+            return;
+        }
+
+        hasDrawn = true;
+        doLayout(changed, l, t, r, b);
+    }
+
+    private void doLayout(boolean changed, int l, int t, int r, int b) {
+
         View child = getChildAt(0);
 
         anchorView.getLocationInWindow(anchorLocation);
@@ -138,6 +175,8 @@ public class Tooltip extends ViewGroup {
         int top = dy;
 
         if (debug) {
+            Log.d(TAG, "anchor location: " + anchorLocation[0] + ", " + anchorLocation[1]);
+            Log.d(TAG, "holder location: " + holderLocation[0] + ", " + holderLocation[1]);
             Log.d(TAG, "child w: " + w + " h: " + h);
             Log.d(TAG, "left: " + left + ", top: " + top);
         }
@@ -313,6 +352,11 @@ public class Tooltip extends ViewGroup {
         tooltipSize[1] = child.getMeasuredHeight();
 
         child.layout(left, top, left + child.getMeasuredWidth(), top + child.getMeasuredHeight());
+
+        if (animate && !hasAnimatedIn) {
+            hasAnimatedIn = false;
+            animateIn(animation);
+        }
     }
 
     @Override
@@ -322,7 +366,7 @@ public class Tooltip extends ViewGroup {
             Log.i(TAG, "canvas w: " + canvas.getWidth() + ", h: " + canvas.getHeight());
         }
 
-        if (showTip) {
+        if (showTip && hasDrawn) {
             canvas.drawPath(tipPath, tipPaint);
         }
     }
@@ -369,6 +413,10 @@ public class Tooltip extends ViewGroup {
 
     public void setListener(Listener listener) {
         this.listener = listener;
+    }
+
+    private void setCheckForPreDraw(boolean checkForPreDraw) {
+        this.checkForPreDraw = checkForPreDraw;
     }
 
     public boolean isShowTip() {
@@ -464,7 +512,6 @@ public class Tooltip extends ViewGroup {
 
         if (debug) {
             Log.d(TAG, "anchor point: " + point.x + ", " + point.y);
-            Log.d(TAG, "circular reveal : " + point.y + ", " + point.x);
             Log.d(TAG, "size: " + size[0] + ", " + size[1]);
         }
 
@@ -685,6 +732,13 @@ public class Tooltip extends ViewGroup {
         private boolean animate;
 
         /**
+         * If the anchor is anchored to some view in CoordinatorLayout, we get incorrect data
+         * about its position in the window. So we need to wait for a preDraw event and then
+         * draw tooltip.
+         */
+        private boolean checkForPreDraw = false;
+
+        /**
          * Show logs
          */
         private boolean debug = false;
@@ -832,6 +886,16 @@ public class Tooltip extends ViewGroup {
         }
 
         /**
+         * If the anchor is anchored to some view in CoordinatorLayout, we get incorrect data
+         * about its position in the window. So we need to wait for a preDraw event and then
+         * draw tooltip.
+         */
+        public Builder checkForPreDraw(boolean check) {
+            this.checkForPreDraw = check;
+            return this;
+        }
+
+        /**
          * Show logs
          * @param debug boolean
          * @return Builder
@@ -868,6 +932,7 @@ public class Tooltip extends ViewGroup {
             tooltip.setPadding(padding);
             tooltip.setListener(listener);
             tooltip.setTip(tip);
+            tooltip.setCheckForPreDraw(checkForPreDraw);
 
             return tooltip;
         }
@@ -883,13 +948,21 @@ public class Tooltip extends ViewGroup {
          */
         public Tooltip show() {
             tooltip = build();
+
+            int[] anchorLocation = new int[2];
+            anchorView.getLocationInWindow(anchorLocation);
+            Log.i(TAG, "anchor location before adding: " + anchorLocation[0] + ", " + anchorLocation[1]);
+
             rootView.addView(tooltip, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+
+            anchorView.getLocationInWindow(anchorLocation);
+            Log.i(TAG, "anchor location after adding: " + anchorLocation[0] + ", " + anchorLocation[1]);
 
             if (autoCancelTime > NO_AUTO_CANCEL) {
                 handler.postDelayed(autoCancelRunnable, autoCancelTime);
             }
 
-            if (animate && animation != null) {
+            /*if (animate && animation != null) {
 
                 tooltip.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
                     @Override
@@ -900,7 +973,7 @@ public class Tooltip extends ViewGroup {
                     }
                 });
 
-            }
+            }*/
 
             return tooltip;
         }

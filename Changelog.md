@@ -11,3 +11,7 @@
  - Animations added
  - Tip corner radius added
  - Min sdk changed to 11
+ 
+### 0.1.4
+ 
+ - Fixed issues with anchored view in the CoordinatorLayout.

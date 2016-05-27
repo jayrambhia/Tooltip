@@ -1,5 +1,6 @@
 package com.fenchtose.tooltip_demo;
 
+import android.content.Intent;
 import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
@@ -26,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
 
     private int tipSizeSmall;
     private int tipSizeRegular;
+    private int tipRadius;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
 
         tipSizeSmall = res.getDimensionPixelSize(R.dimen.tip_dimen_small);
         tipSizeRegular = res.getDimensionPixelSize(R.dimen.tip_dimen_regular);
+        tipRadius = res.getDimensionPixelOffset(R.dimen.tip_radius);
 
         final View bottomButton = findViewById(R.id.button_bottom);
         if (bottomButton != null) {
@@ -176,8 +179,17 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        showMenuTooltip(findViewById(R.id.demo_action));
+        if (item.getItemId() == R.id.demo_action) {
+            showMenuTooltip(findViewById(R.id.demo_action));
+        } else if (item.getItemId() == R.id.second_action) {
+            openSecondActivity();
+        }
         return true;
+    }
+
+    private void openSecondActivity() {
+        Intent intent = new Intent(this, SecondActivity.class);
+        startActivity(intent);
     }
 
     private void showTooltip(@NonNull View anchor, @StringRes int resId,
@@ -216,7 +228,7 @@ public class MainActivity extends AppCompatActivity {
                 .withPadding(tooltipPadding)
                 .content(content)
                 .cancelable(false)
-                .withTip(new Tooltip.Tip(tipSizeRegular, tipSizeRegular, tooltipColor, 8))
+                .withTip(new Tooltip.Tip(tipSizeRegular, tipSizeRegular, tooltipColor, tipRadius))
                 .into(root)
                 .debug(true)
                 .show();
