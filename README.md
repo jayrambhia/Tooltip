@@ -41,7 +41,7 @@ That's it. It's that simple. You can customize the size and color of the tip to 
 ### Dependency
 
     dependencies {
-        compile 'com.fenchtose.tooltip:0.1.3'
+        compile 'com.fenchtose:tooltip:0.1.3'
     }
 
 ### Useful Methods:
