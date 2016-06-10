@@ -15,3 +15,8 @@
 ### 0.1.4
  
  - Fixed issues with anchored view in the CoordinatorLayout.
+ 
+### 0.1.5
+ 
+ - Refactored code to use proper Builder pattern reducing method counts
+ - Skipping animation if view is detached
