@@ -5,6 +5,10 @@ not require any custom layout. It works out of the box with all the layouts.
 
 Here's a short gif showing how it works.
 
+<a href="http://www.methodscount.com/?lib=com.fenchtose%3Atooltip%3A0.1.5"><img src="https://img.shields.io/badge/Methods count-core: 151 | deps: 20-e91e63.svg"/></a>
+<a href="http://www.methodscount.com/?lib=com.fenchtose%3Atooltip%3A0.1.5"><img src="https://img.shields.io/badge/Size-19 KB-e91e63.svg"/></a>
+
+
 ![Demo](https://raw.githubusercontent.com/jayrambhia/Tooltip/master/art/demo1.gif)
 
 ## Tooltip.Builder
@@ -41,7 +45,7 @@ That's it. It's that simple. You can customize the size and color of the tip to 
 ### Dependency
 
     dependencies {
-        compile 'com.fenchtose:tooltip:0.1.4'
+        compile 'com.fenchtose:tooltip:0.1.5'
     }
 
 ### Useful Methods:
