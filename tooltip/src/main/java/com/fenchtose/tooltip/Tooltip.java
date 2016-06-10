@@ -10,6 +10,7 @@ import android.graphics.Path;
 import android.graphics.Point;
 import android.os.Build;
 import android.os.Handler;
+import android.support.annotation.ColorInt;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -33,6 +34,7 @@ public class Tooltip extends ViewGroup {
     private static final String TAG = "Tooltip";
 
     public static final int NO_AUTO_CANCEL = 0;
+    private static final int MIN_INT_VALUE = -2147483648;
 
     private boolean debug = false;
 
@@ -90,22 +92,69 @@ public class Tooltip extends ViewGroup {
      */
     private boolean checkForPreDraw = false;
 
-    private Tooltip(@NonNull Context context, @NonNull View content, @NonNull View anchorView,
-                    @NonNull Listener builderListener) {
-        super(context);
-        init(content, anchorView, builderListener);
+    /**
+     * If the view is attached to window or not
+     */
+    private boolean isAttached = false;
+
+    private Tooltip(@NonNull Builder builder) {
+        super(builder.context);
+        init(builder);
     }
 
-    private void init(@NonNull View contentView, @NonNull View anchorView,
-                      @NonNull Listener builderListener) {
+    private void init(@NonNull Builder builder) {
 
-        this.contentView = contentView;
-        this.anchorView = anchorView;
-        this.builderListener = builderListener;
+        this.contentView = builder.contentView;
+        this.anchorView = builder.anchorView;
+        this.builderListener = builder.myListener;
+
+        this.autoAdjust = builder.autoAdjust;
+        this.position = builder.position;
+        this.padding = builder.padding;
+        this.checkForPreDraw = builder.checkForPreDraw;
+        this.debug = builder.debug;
+
+        // Cancelable
+        this.isCancelable = builder.cancelable;
+        if (isCancelable) {
+            this.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dismiss(animate);
+                }
+            });
+        } else {
+            this.setOnClickListener(null);
+        }
+
+        // Animation
+        this.animation = builder.animation;
+        animate = (animation != null && animation.getType() != TooltipAnimation.NONE);
 
         tipPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        tipPaint.setColor(0xffffffff);
         tipPaint.setStyle(Paint.Style.FILL_AND_STROKE);
+
+        // Tip
+        this.tip = builder.tip;
+        this.showTip = (tip != null);
+        if (tip != null) {
+
+            tipPaint.setColor(tip.getColor());
+
+            if (tip.getTipRadius() > 0) {
+                tipPaint.setStrokeJoin(Paint.Join.ROUND);
+                tipPaint.setStrokeCap(Paint.Cap.ROUND);
+                tipPaint.setStrokeWidth(tip.getTipRadius());
+            }
+        }
+
+        tipPaint.setColor(tip == null ? 0xffffffff : tip.getColor());
+
+        if (debug) {
+            Log.d(TAG, "show tip: " + showTip);
+        }
+
+        this.listener = builder.listener;
 
         tipPath = new Path();
 
@@ -116,8 +165,6 @@ public class Tooltip extends ViewGroup {
         }
 
         this.addView(contentView, params);
-
-        setCancelable(isCancelable);
     }
 
     @Override
@@ -158,6 +205,18 @@ public class Tooltip extends ViewGroup {
         doLayout(changed, l, t, r, b);
     }
 
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        isAttached = true;
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        isAttached = false;
+    }
+
     private void doLayout(boolean changed, int l, int t, int r, int b) {
 
         View child = getChildAt(0);
@@ -183,8 +242,8 @@ public class Tooltip extends ViewGroup {
 
         tipPath.reset();
 
-        int px = -1;
-        int py = -1;
+        int px = MIN_INT_VALUE;
+        int py = MIN_INT_VALUE;
 
         switch (position) {
             case LEFT: {
@@ -276,9 +335,6 @@ public class Tooltip extends ViewGroup {
                     tipPath.lineTo(px + tip.getWidth() / 2, py + tip.getHeight());
                     tipPath.lineTo(px, py);
 
-                    if (debug) {
-                        Log.i(TAG, "px: " + px + ", py: " + py);
-                    }
                 }
 
                 break;
@@ -320,10 +376,17 @@ public class Tooltip extends ViewGroup {
             Log.i(TAG, "child layout: left: " + left + " top: " + top + " right: "
                     + (left + child.getMeasuredWidth())
                     + " bottom: " + (top + child.getMeasuredHeight()));
+            Log.i(TAG, "px: " + px + ", py: " + py);
+
         }
 
         // Tip was not drawn. We need to set anchor point for animation
-        if (px == -1 || py == -1) {
+        if (px == MIN_INT_VALUE || py == MIN_INT_VALUE) {
+
+            if (debug) {
+                Log.d(TAG, "Tip was not drawn");
+            }
+
             switch (position) {
                 case TOP:
                     px = left + child.getMeasuredWidth()/2;
@@ -371,83 +434,10 @@ public class Tooltip extends ViewGroup {
         }
     }
 
-    private void setPosition(int position) {
-        this.position = position;
-    }
-
     public boolean isCancelable() {
         return isCancelable;
     }
 
-    public void setCancelable(boolean isCancelable) {
-        this.isCancelable = isCancelable;
-        if (isCancelable) {
-            this.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    dismiss(animate);
-                }
-            });
-        } else {
-            this.setOnClickListener(null);
-        }
-    }
-
-    private void setAnimation(@Nullable TooltipAnimation animation) {
-        this.animation = animation;
-        if (animation == null || animation.getType() == TooltipAnimation.NONE) {
-            animate = false;
-            return;
-        }
-
-        animate = true;
-    }
-
-    private void setAutoAdjust(boolean autoAdjust) {
-        this.autoAdjust = autoAdjust;
-    }
-
-    private void setPadding(int padding) {
-        this.padding = padding;
-    }
-
-    public void setListener(Listener listener) {
-        this.listener = listener;
-    }
-
-    private void setCheckForPreDraw(boolean checkForPreDraw) {
-        this.checkForPreDraw = checkForPreDraw;
-    }
-
-    public boolean isShowTip() {
-        return showTip;
-    }
-
-    private void setShowTip(boolean showTip) {
-        this.showTip = showTip;
-        if (showTip && tip == null) {
-            throw new NullPointerException("Tip is null");
-        }
-    }
-
-    private void setTip(@Nullable Tip tip) {
-        this.showTip = (tip != null);
-        this.tip = tip;
-        if (tip != null) {
-
-            tipPaint.setColor(tip.getColor());
-
-            if (tip.getTipRadius() > 0) {
-                tipPaint.setStrokeJoin(Paint.Join.ROUND);
-                tipPaint.setStrokeCap(Paint.Cap.ROUND);
-                tipPaint.setStrokeWidth(tip.getTipRadius());
-            }
-        }
-
-        if (debug) {
-            Log.d(TAG, "show tip: " + showTip);
-        }
-    }
 
     /**
      * Dismiss and remove Tooltip from the view.
@@ -484,6 +474,14 @@ public class Tooltip extends ViewGroup {
             return;
         }
 
+        if (!isAttached) {
+            if (debug) {
+                Log.e(TAG, "view is detached. Not animating");
+            }
+
+            return;
+        }
+
         if (!animate || animation == null) {
             dismiss();
             return;
@@ -491,10 +489,6 @@ public class Tooltip extends ViewGroup {
 
         animateOut(animation);
 
-    }
-
-    public void setDebug(boolean debug) {
-        this.debug = debug;
     }
 
     private Point getAnchorPoint() {
@@ -507,6 +501,13 @@ public class Tooltip extends ViewGroup {
 
     private void animateIn(@NonNull TooltipAnimation animation) {
 
+        if (!isAttached) {
+            if (debug) {
+                Log.e(TAG, "View is not attached. Not animating the tooltip");
+            }
+            return;
+        }
+
         Point point = getAnchorPoint();
         int[] size = getTooltipSize();
 
@@ -515,7 +516,7 @@ public class Tooltip extends ViewGroup {
             Log.d(TAG, "size: " + size[0] + ", " + size[1]);
         }
 
-        Animator animator = getAnimatorIn(animation, point, size, true);
+        Animator animator = getAnimator(animation, point, size, true);
         if (animator != null) {
             animator.start();
         }
@@ -523,9 +524,9 @@ public class Tooltip extends ViewGroup {
     }
 
     @Nullable
-    private Animator getAnimatorIn(@NonNull TooltipAnimation animation,
-                                   @NonNull Point point, @NonNull int[] size,
-                                   boolean animateIn) {
+    private Animator getAnimator(@NonNull TooltipAnimation animation,
+                                 @NonNull Point point, @NonNull int[] size,
+                                 boolean animateIn) {
 
         float startAlpha = 0;
         float endAlpha = 1;
@@ -600,7 +601,7 @@ public class Tooltip extends ViewGroup {
             Log.d(TAG, "size: " + size[0] + ", " + size[1]);
         }
 
-        Animator animator = getAnimatorIn(animation, point, size, false);
+        Animator animator = getAnimator(animation, point, size, false);
         if (animator == null) {
             dismiss();
             return;
@@ -657,7 +658,7 @@ public class Tooltip extends ViewGroup {
      */
     public static class Builder {
 
-        private Context context;
+        private final Context context;
 
         /**
          * ViewGroup where Tooltip is added
@@ -923,17 +924,7 @@ public class Tooltip extends ViewGroup {
                 throw new NullPointerException("content view is null");
             }
 
-            tooltip = new Tooltip(context, contentView, anchorView, myListener);
-            tooltip.setDebug(debug);
-            tooltip.setAnimation(animation);
-            tooltip.setPosition(position);
-            tooltip.setCancelable(cancelable);
-            tooltip.setAutoAdjust(autoAdjust);
-            tooltip.setPadding(padding);
-            tooltip.setListener(listener);
-            tooltip.setTip(tip);
-            tooltip.setCheckForPreDraw(checkForPreDraw);
-
+            tooltip = new Tooltip(this);
             return tooltip;
         }
 
@@ -993,17 +984,18 @@ public class Tooltip extends ViewGroup {
         /**
          * length of the base of isosceles triangle
          */
-        private int width;
+        private final int width;
 
         /**
          * length of the perpendicular from top vertex to the base
          */
-        private int height;
+        private final int height;
 
         /**
          * color of the tip.
          */
-        private int color;
+        @ColorInt
+        private final int color;
 
         /**
          * Corner radius of the tip in px
@@ -1030,6 +1022,7 @@ public class Tooltip extends ViewGroup {
             return height;
         }
 
+        @ColorInt
         public int getColor() {
             return color;
         }
