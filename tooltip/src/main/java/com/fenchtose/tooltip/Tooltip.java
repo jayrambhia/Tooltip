@@ -15,6 +15,7 @@ import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -116,16 +117,6 @@ public class Tooltip extends ViewGroup {
 
         // Cancelable
         this.isCancelable = builder.cancelable;
-        if (isCancelable) {
-            this.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    dismiss(animate);
-                }
-            });
-        } else {
-            this.setOnClickListener(null);
-        }
 
         // Animation
         this.animation = builder.animation;
@@ -215,6 +206,15 @@ public class Tooltip extends ViewGroup {
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         isAttached = false;
+    }
+
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
+        if (isCancelable) {
+            dismiss(animate);
+        }
+
+        return false;
     }
 
     private void doLayout(boolean changed, int l, int t, int r, int b) {
