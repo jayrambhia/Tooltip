@@ -210,6 +210,7 @@ public class Tooltip extends ViewGroup {
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
+        super.onInterceptTouchEvent(ev);
         if (isCancelable) {
             dismiss(animate);
         }
