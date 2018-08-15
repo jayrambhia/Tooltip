@@ -516,9 +516,10 @@ public class Tooltip extends ViewGroup {
             Log.d(TAG, "size: " + size[0] + ", " + size[1]);
         }
 
-        Animator animator = getAnimator(animation, point, size, true);
+        final Animator animator = getAnimator(animation, point, size, true);
         if (animator != null) {
             animator.start();
+            animation.hideContentWhenAnimatingIn(animator, contentView);
         }
 
     }
@@ -609,6 +610,7 @@ public class Tooltip extends ViewGroup {
 
         animator.start();
         isDismissAnimationInProgress = true;
+        animation.hideContentWhenAnimatingOut(contentView);
 
         animator.addListener(new Animator.AnimatorListener() {
             @Override
@@ -650,7 +652,6 @@ public class Tooltip extends ViewGroup {
                 return null;
         }
     }
-
 
     /**
      * Builder class for {@link Tooltip}. Builder has the responsibility of creating the Tooltip
@@ -942,12 +943,16 @@ public class Tooltip extends ViewGroup {
 
             int[] anchorLocation = new int[2];
             anchorView.getLocationInWindow(anchorLocation);
-            Log.i(TAG, "anchor location before adding: " + anchorLocation[0] + ", " + anchorLocation[1]);
+            if (debug) {
+                Log.d(TAG, "anchor location before adding: " + anchorLocation[0] + ", " + anchorLocation[1]);
+            }
 
             rootView.addView(tooltip, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 
             anchorView.getLocationInWindow(anchorLocation);
-            Log.i(TAG, "anchor location after adding: " + anchorLocation[0] + ", " + anchorLocation[1]);
+            if (debug) {
+                Log.i(TAG, "anchor location after adding: " + anchorLocation[0] + ", " + anchorLocation[1]);
+            }
 
             if (autoCancelTime > NO_AUTO_CANCEL) {
                 handler.postDelayed(autoCancelRunnable, autoCancelTime);
