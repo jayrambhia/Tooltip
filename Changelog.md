@@ -20,3 +20,8 @@
  
  - Refactored code to use proper Builder pattern reducing method counts
  - Skipping animation if view is detached
+
+### 0.1.6
+
+ - Fixed manifest for the library.
+ - Added hide content when animating option to animation.

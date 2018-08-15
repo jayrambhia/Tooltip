@@ -25,7 +25,7 @@ public class TooltipAnimation {
 
     /**
      * Types of Animations available:
-     * <br/>
+     * <br>
      * <ul>
      *     <li>{@link #NONE} : No Animation</li>
      *     <li>{@link #FADE} : Fade in and Fade Out</li>
@@ -80,9 +80,9 @@ public class TooltipAnimation {
 
     /**
      * Create a new Animation object for {@link Tooltip}
-     * <br/>
+     * <br>
      * type {@link #DEFAULT_TYPE}
-     * <br/>
+     * <br>
      * duration {@link #DEFAULT_DURATION}
      */
     public TooltipAnimation() {
