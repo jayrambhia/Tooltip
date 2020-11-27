@@ -5,15 +5,15 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.content.ContextCompat;
 import com.fenchtose.tooltip.Tooltip;
 import com.fenchtose.tooltip.TooltipAnimation;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 /**
  * Created by Jay Rambhia on 5/27/16.

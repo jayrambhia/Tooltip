@@ -4,9 +4,9 @@ import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.annotation.TargetApi;
 import android.os.Build;
-import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.ViewAnimationUtils;
+import androidx.annotation.NonNull;
 
 /**
  * Helper class to create Animator Objects

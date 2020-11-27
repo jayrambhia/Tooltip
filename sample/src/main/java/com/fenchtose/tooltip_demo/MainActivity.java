@@ -4,8 +4,6 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -14,6 +12,8 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import com.fenchtose.tooltip.Tooltip;
 import com.fenchtose.tooltip.TooltipAnimation;
 
