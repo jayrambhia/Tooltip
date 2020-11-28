@@ -1,10 +1,10 @@
 package com.fenchtose.tooltip;
 
 import android.animation.Animator;
-import android.support.annotation.IntDef;
-import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.ViewGroup;
+import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

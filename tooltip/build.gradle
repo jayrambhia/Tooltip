@@ -9,12 +9,11 @@ def siteUrl = "https://github.com/jayrambhia/Tooltip"
 def gitUrl = "https://github.com/jayrambhia/Tooltip.git"
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "25.0.0"
+    compileSdkVersion 29
 
     defaultConfig {
         minSdkVersion 11
-        targetSdkVersion 23
+        targetSdkVersion 26
         versionCode 12
         versionName version
     }
@@ -77,8 +76,8 @@ configurations {
 }
 
 dependencies {
-    compile 'com.android.support:support-annotations:23.3.0'
-    javadocDeps 'com.android.support:support-annotations:23.3.0'
+    api 'androidx.annotation:annotation:1.0.2'
+    javadocDeps 'androidx.annotation:annotation:1.0.2'
 }
 
 task sourcesJar(type: Jar) {
@@ -101,6 +100,8 @@ artifacts {
     archives sourcesJar
 }
 
-task findConventions << {
-    println project.getConvention()
+task findConventions {
+    doLast {
+        println project.getConvention()
+    }
 }

@@ -1,0 +1,10 @@
+buildCache {
+    def isCi = System.getenv().containsKey("JENKINS_URL")
+
+    local { enabled = !isCi }
+    remote(HttpBuildCache) {
+        push = isCi
+        enabled = true
+        url = 'https://gradle-enterprise-poc.vinted.net/cache/'
+    }
+}
