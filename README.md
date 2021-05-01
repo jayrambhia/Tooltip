@@ -55,7 +55,7 @@ That's it. It's that simple. You can customize the size and color of the tip to 
     }
     
     dependencies {
-        implementation 'com.github.jayrambhia:Tooltip:0.1.7'
+        implementation 'com.github.jayrambhia:Tooltip:0.1.7-1'
     }
 
 ### Useful Methods:
