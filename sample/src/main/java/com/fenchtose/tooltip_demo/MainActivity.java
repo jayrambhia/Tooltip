@@ -184,12 +184,19 @@ public class MainActivity extends AppCompatActivity {
             showMenuTooltip(findViewById(R.id.demo_action));
         } else if (item.getItemId() == R.id.second_action) {
             openSecondActivity();
+        } else if (item.getItemId() == R.id.third_action) {
+            openFragmentDemo();
         }
         return true;
     }
 
     private void openSecondActivity() {
         Intent intent = new Intent(this, SecondActivity.class);
+        startActivity(intent);
+    }
+
+    private void openFragmentDemo() {
+        Intent intent = new Intent(this, FragmentHolderActivity.class);
         startActivity(intent);
     }
 

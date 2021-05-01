@@ -11,4 +11,8 @@
         android:id="@+id/second_action"
         android:title="FAB Tooltip"/>
 
+    <item
+        android:id="@+id/third_action"
+        android:title="Tooltip in fragment"/>
+
 </menu>
