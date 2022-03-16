@@ -51,7 +51,10 @@ public class Tooltip extends ViewGroup {
     private boolean isCancelable = true;
     private boolean autoAdjust = true;
 
-    private int padding;
+    private int leftPadding = 0;
+    private int rightPadding = 0;
+    private int topPadding = 0;
+    private int bottomPadding = 0;
 
     private Listener builderListener;
     private Listener listener;
@@ -68,7 +71,12 @@ public class Tooltip extends ViewGroup {
     public static final int TOP = 1;
     public static final int RIGHT = 2;
     public static final int BOTTOM = 3;
-    @IntDef({LEFT, TOP, RIGHT, BOTTOM})
+    public static final int TOP_LEFT = 4;
+    public static final int TOP_RIGHT = 5;
+    public static final int BOTTOM_LEFT = 6;
+    public static final int BOTTOM_RIGHT = 7;
+
+    @IntDef({LEFT, TOP, RIGHT, BOTTOM, TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT})
     @Retention(RetentionPolicy.SOURCE)
     public @interface Position {}
 
@@ -111,7 +119,12 @@ public class Tooltip extends ViewGroup {
 
         this.autoAdjust = builder.autoAdjust;
         this.position = builder.position;
-        this.padding = builder.padding;
+
+        this.leftPadding = builder.leftPadding;
+        this.topPadding = builder.topPadding;
+        this.rightPadding = builder.rightPadding;
+        this.bottomPadding = builder.bottomPadding;
+
         this.checkForPreDraw = builder.checkForPreDraw;
         this.debug = builder.debug;
 
@@ -167,6 +180,7 @@ public class Tooltip extends ViewGroup {
 
         if (debug) {
             Log.i(TAG, "child measured width: " + child.getMeasuredWidth());
+            Log.i(TAG, "child measured height: " + child.getMeasuredHeight());
         }
     }
 
@@ -236,8 +250,8 @@ public class Tooltip extends ViewGroup {
         if (debug) {
             Log.d(TAG, "anchor location: " + anchorLocation[0] + ", " + anchorLocation[1]);
             Log.d(TAG, "holder location: " + holderLocation[0] + ", " + holderLocation[1]);
+            Log.d(TAG, "left (dx): " + left + ", top (dy): " + top);
             Log.d(TAG, "child w: " + w + " h: " + h);
-            Log.d(TAG, "left: " + left + ", top: " + top);
         }
 
         tipPath.reset();
@@ -252,16 +266,16 @@ public class Tooltip extends ViewGroup {
 
                 int diff = (anchorView.getHeight() - h) / 2;
                 // We should pad right side
-                left -= (w + padding + (showTip ? tip.getHeight() : 0));
+                left -= (w + rightPadding + (showTip ? tip.getHeight() : 0));
                 // Top and bottom padding is not required
                 top += diff;
 
                 if (showTip) {
                     px = left + w + tip.getHeight();
-                    py = top + h/2;
+                    py = top + h / 2;
                     tipPath.moveTo(px, py);
-                    tipPath.lineTo(px - tip.getHeight(), py + tip.getWidth()/2);
-                    tipPath.lineTo(px - tip.getHeight(), py - tip.getWidth()/2);
+                    tipPath.lineTo(px - tip.getHeight(), py + tip.getWidth() / 2f);
+                    tipPath.lineTo(px - tip.getHeight(), py - tip.getWidth() / 2f);
                     tipPath.lineTo(px, py);
                 }
 
@@ -273,16 +287,16 @@ public class Tooltip extends ViewGroup {
                 // align with horizontal axis
                 int diff = (anchorView.getHeight() - h) / 2;
                 // We should pad left side
-                left += (anchorView.getWidth() + padding + (showTip ? tip.getHeight() : 0));
+                left += (anchorView.getWidth() + leftPadding + (showTip ? tip.getHeight() : 0));
                 // Top and bottom padding is not required
                 top += diff;
 
                 if (showTip) {
                     px = left - tip.getHeight();
-                    py = top + h/2;
+                    py = top + h / 2;
                     tipPath.moveTo(px, py);
-                    tipPath.lineTo(px + tip.getHeight(), py + tip.getWidth()/2);
-                    tipPath.lineTo(px + tip.getHeight(), py - tip.getWidth()/2);
+                    tipPath.lineTo(px + tip.getHeight(), py + tip.getWidth() / 2f);
+                    tipPath.lineTo(px + tip.getHeight(), py - tip.getWidth() / 2f);
                     tipPath.lineTo(px, py);
                 }
 
@@ -298,14 +312,14 @@ public class Tooltip extends ViewGroup {
                 left += diff;
 
                 // We should only pad bottom
-                top -= (h + padding + (showTip ? tip.getHeight() : 0));
+                top -= (h + bottomPadding + (showTip ? tip.getHeight() : 0));
 
                 if (showTip) {
                     px = left + w / 2;
                     py = top + h + tip.getHeight();
                     tipPath.moveTo(px, py);
-                    tipPath.lineTo(px - tip.getWidth() / 2, py - tip.getHeight());
-                    tipPath.lineTo(px + tip.getWidth() / 2, py - tip.getHeight());
+                    tipPath.lineTo(px - tip.getWidth() / 2f, py - tip.getHeight());
+                    tipPath.lineTo(px + tip.getWidth() / 2f, py - tip.getHeight());
                     tipPath.lineTo(px, py);
                 }
 
@@ -313,7 +327,7 @@ public class Tooltip extends ViewGroup {
             }
 
             case BOTTOM: {
-                // to top of anchor view
+                // to bottom of anchor view
                 // align with vertical axis
                 int diff = (anchorView.getWidth() - w) / 2;
 
@@ -321,7 +335,7 @@ public class Tooltip extends ViewGroup {
                 left += diff;
 
                 // We should only pad top
-                top += anchorView.getHeight() + padding + (showTip ? tip.getHeight() : 0);
+                top += anchorView.getHeight() + topPadding + (showTip ? tip.getHeight() : 0);
 
                 if (debug) {
                     Log.d(TAG, "tip top: " + top);
@@ -331,29 +345,105 @@ public class Tooltip extends ViewGroup {
                     px = left + w / 2;
                     py = top - tip.getHeight();
                     tipPath.moveTo(px, py);
-                    tipPath.lineTo(px - tip.getWidth() / 2, py + tip.getHeight());
-                    tipPath.lineTo(px + tip.getWidth() / 2, py + tip.getHeight());
+                    tipPath.lineTo(px - tip.getWidth() / 2f, py + tip.getHeight());
+                    tipPath.lineTo(px + tip.getWidth() / 2f, py + tip.getHeight());
                     tipPath.lineTo(px, py);
-
                 }
 
                 break;
             }
 
+            case TOP_LEFT: {
+                // to top left corner of anchor view
+                int diff = anchorView.getWidth() - w;
+                left -= rightPadding - diff;
+                // We should only pad bottom
+                top -= (h + bottomPadding + (showTip ? tip.getHeight() : 0));
+
+                if (showTip) {
+                    px = left + w - anchorView.getWidth() / 2;
+                    py = top + h + tip.getHeight();
+                    tipPath.moveTo(px, py);
+                    tipPath.lineTo(px - tip.getWidth() / 2f, py - tip.getHeight());
+                    tipPath.lineTo(px + tip.getWidth() / 2f, py - tip.getHeight());
+                    tipPath.lineTo(px, py);
+                }
+
+                break;
+            }
+
+            case TOP_RIGHT: {
+                // to top right corner of anchor view
+                left += leftPadding;
+                // We should only pad bottom
+                top -= (h + bottomPadding + (showTip ? tip.getHeight() : 0));
+
+                if (showTip) {
+                    px = left + anchorView.getWidth() / 2;
+                    py = top + h + tip.getHeight();
+                    tipPath.moveTo(px, py);
+                    tipPath.lineTo(px - tip.getWidth() / 2f, py - tip.getHeight());
+                    tipPath.lineTo(px + tip.getWidth() / 2f, py - tip.getHeight());
+                    tipPath.lineTo(px, py);
+                }
+
+                break;
+            }
+
+            case BOTTOM_LEFT: {
+                // to bottom left corner of anchor view
+                int diff = anchorView.getWidth() - w;
+                left -= rightPadding - diff;
+                // We should only pad top
+                top += anchorView.getHeight() + topPadding + (showTip ? tip.getHeight() : 0);
+
+                if (showTip) {
+                    px = left + w - anchorView.getWidth() / 2;
+                    py = top - tip.getHeight();
+                    tipPath.moveTo(px, py);
+                    tipPath.lineTo(px - tip.getWidth() / 2f, py + tip.getHeight());
+                    tipPath.lineTo(px + tip.getWidth() / 2f, py + tip.getHeight());
+                    tipPath.lineTo(px, py);
+                }
+
+                break;
+            }
+
+            case BOTTOM_RIGHT: {
+                // to bottom right corner of anchor view
+                left += leftPadding;
+                // We should only pad top
+                top += anchorView.getHeight() + topPadding + (showTip ? tip.getHeight() : 0);
+
+                if (showTip) {
+                    px = left + anchorView.getWidth() / 2;
+                    py = top - tip.getHeight();
+                    tipPath.moveTo(px, py);
+                    tipPath.lineTo(px - tip.getWidth() / 2f, py + tip.getHeight());
+                    tipPath.lineTo(px + tip.getWidth() / 2f, py + tip.getHeight());
+                    tipPath.lineTo(px, py);
+                }
+
+                break;
+            }
         }
 
         if (autoAdjust) {
             switch (position) {
                 case TOP:
                 case BOTTOM:
+                case TOP_LEFT:
+                case TOP_RIGHT:
+                case BOTTOM_LEFT:
+                case BOTTOM_RIGHT:
                     if (left + w > r) {
                         // View is going out on the right side
                         // Add padding to the right
-                        left = r - w - padding;
+                        left = r - w - rightPadding;
                     } else if (left < l) {
                         // View is going out on the left side
                         // Add padding to the left
-                        left = l + padding;
+                        left = l + leftPadding;
                     }
                     break;
 
@@ -362,11 +452,11 @@ public class Tooltip extends ViewGroup {
                     if (top + h > b) {
                         // View is going out on the bottom side
                         // Add padding to bottom
-                        top = b - h - padding;
+                        top = b - h - bottomPadding;
                     } else if (top < t) {
                         // View is going out on the top side
                         // Add padding to top
-                        top = t + padding;
+                        top = t + topPadding;
                     }
                     break;
             }
@@ -389,20 +479,36 @@ public class Tooltip extends ViewGroup {
 
             switch (position) {
                 case TOP:
-                    px = left + child.getMeasuredWidth()/2;
+                    px = left + child.getMeasuredWidth() / 2;
                     py = top + child.getMeasuredHeight();
                     break;
                 case BOTTOM:
-                    px = left + child.getMeasuredWidth()/2;
+                    px = left + child.getMeasuredWidth() / 2;
                     py = top;
                     break;
                 case LEFT:
                     px = left + child.getMeasuredWidth();
-                    py = top + child.getMeasuredHeight();
+                    py = top + child.getMeasuredHeight() / 2;
                     break;
                 case RIGHT:
                     px = left;
-                    py = top + child.getMeasuredHeight()/2;
+                    py = top + child.getMeasuredHeight() / 2;
+                    break;
+                case TOP_LEFT:
+                    px = left + child.getMeasuredWidth();
+                    py = top + child.getMeasuredHeight();
+                    break;
+                case TOP_RIGHT:
+                    px = left;
+                    py = top + child.getMeasuredHeight();
+                    break;
+                case BOTTOM_LEFT:
+                    px = left + child.getMeasuredWidth();
+                    py = top;
+                    break;
+                case BOTTOM_RIGHT:
+                    px = left;
+                    py = top;
                     break;
             }
         }
@@ -640,17 +746,49 @@ public class Tooltip extends ViewGroup {
                                       float startScale, float endScale) {
 
         switch (position) {
+            case BOTTOM_LEFT:
             case BOTTOM:
-                return AnimationUtils.scaleY(contentView, size[0]/2, 0 , startScale, endScale, animation.getDuration());
+            case BOTTOM_RIGHT:
+                return AnimationUtils.scaleY(contentView, size[0] / 2, 0, startScale, endScale, animation.getDuration());
+            case TOP_LEFT:
             case TOP:
-                return AnimationUtils.scaleY(contentView, size[0]/2, size[1] , startScale, endScale, animation.getDuration());
+            case TOP_RIGHT:
+                return AnimationUtils.scaleY(contentView, size[0] / 2, size[1], startScale, endScale, animation.getDuration());
             case RIGHT:
-                return AnimationUtils.scaleX(contentView, 0, size[1]/2, startScale, endScale, animation.getDuration());
+                return AnimationUtils.scaleX(contentView, 0, size[1] / 2, startScale, endScale, animation.getDuration());
             case LEFT:
-                return AnimationUtils.scaleX(contentView, size[0], size[1]/2, startScale, endScale, animation.getDuration());
+                return AnimationUtils.scaleX(contentView, size[0], size[1] / 2, startScale, endScale, animation.getDuration());
             default:
                 return null;
         }
+    }
+
+    /**
+     * Gets tooltip horizontal position
+     **/
+    public float getContentX() {
+        return contentView.getX();
+    }
+
+    /**
+     * Sets tooltip horizontal position
+     **/
+    public void setContentX(float x) {
+        contentView.setX(x);
+    }
+
+    /**
+     * Gets tooltip vertical position
+     **/
+    public float getContentY() {
+        return contentView.getY();
+    }
+
+    /**
+     * Sets tooltip vertical position
+     **/
+    public void setContentY(float y) {
+        contentView.setY(y);
     }
 
     /**
@@ -702,9 +840,12 @@ public class Tooltip extends ViewGroup {
         private Tip tip;
 
         /**
-         * Margin from the anchor and screen boundaries
+         * Margins from the anchor and screen boundaries
          */
-        private int padding = 0;
+        private int leftPadding = 0;
+        private int topPadding = 0;
+        private int rightPadding = 0;
+        private int bottomPadding = 0;
 
         /**
          * If you want the tooltip to dismiss automatically after a certain amount of time,
@@ -744,6 +885,16 @@ public class Tooltip extends ViewGroup {
          * Show logs
          */
         private boolean debug = false;
+
+        /**
+         * Bound from top and bottom, if tooltip is outside bounds then it wil be clipped
+         */
+        private int topBottomBound = 0;
+
+        /**
+         * Should tooltip be clipped beyond top bottom bounds
+         */
+        private boolean clipOutsideBounds = true;
 
         public Builder(@NonNull Context context) {
             this.context = context;
@@ -835,11 +986,38 @@ public class Tooltip extends ViewGroup {
 
         /**
          * Margin from the anchor and screen boundaries
-         * @param padding - margin from the screen edge (in pixels).
+         * @param padding all (left, top, right, bottom) margins from the screen edge (in pixels).
          * @return Builder
          */
         public Builder withPadding(int padding) {
-            this.padding = padding;
+            return withPadding(padding, padding, padding, padding);
+        }
+
+        /**
+         * Margins from the anchor and screen boundaries
+         *
+         * @param topBottom top and bottom margins from the screen edge (in pixels).
+         * @param leftRight  left and right margins from the screen edge (in pixels).
+         * @return Builder
+         */
+        public Builder withPadding(int topBottom, int leftRight) {
+            return withPadding(leftRight, topBottom, leftRight, topBottom);
+        }
+
+        /**
+         * Margins from the anchor and screen boundaries,
+         *
+         * @param left  left margin from the screen edge (in pixels).
+         * @param top    top margin from the screen edge (in pixels).
+         * @param right    right margin from the screen edge (in pixels).
+         * @param bottom bottom margin from the screen edge (in pixels).
+         * @return Builder
+         */
+        public Builder withPadding(int left, int top, int right, int bottom) {
+            this.leftPadding = left;
+            this.topPadding = top;
+            this.rightPadding = right;
+            this.bottomPadding = bottom;
             return this;
         }
 
@@ -913,6 +1091,30 @@ public class Tooltip extends ViewGroup {
         }
 
         /**
+         * Sets constraint from top and bottom in pixels
+         * Tooltip moved with setContentY will be not drawn beyond boundaries
+         * with a condition that clipOutsideBounds is true
+         *
+         * @param boundary additional top and bottom boundaries for tooltip
+         * @return Builder
+         */
+        public Builder topBottomBounds(int boundary) {
+            this.topBottomBound = boundary;
+            return this;
+        }
+
+        /**
+         * Sets that tooltip should be clipped outside bounds, default is true
+         *
+         * @param clipOutsideBounds if true tooltip will be clipped outside top and bottom bounds
+         * @return Builder
+         */
+        public Builder clipOutsideBounds(boolean clipOutsideBounds) {
+            this.clipOutsideBounds = clipOutsideBounds;
+            return this;
+        }
+
+        /**
          * Create a new instance of Tooltip. This method will throw {@link NullPointerException}
          * if {@link #anchorView} or {@link #rootView} or {@link #contentView} is not assigned.
          * @return {@link Tooltip}
@@ -953,6 +1155,9 @@ public class Tooltip extends ViewGroup {
             }
 
             rootView.addView(tooltip, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+
+            tooltip.setPadding(0, topBottomBound, 0, topBottomBound);
+            tooltip.setClipToPadding(clipOutsideBounds);
 
             anchorView.getLocationInWindow(anchorLocation);
             if (debug) {
